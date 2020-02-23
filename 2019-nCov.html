@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2019-nCov疫情全国分布图</title>
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/china.js"></script>
+</head>
+
+<body>
+    <div id="container" style="width: 600px; height: 600px; margin: 0 auto"></div>
+    <script>
+        var myCharts = echarts.init(document.querySelector('#container'));
+        fetch(`http://127.0.0.1:200/api/data`).then(res => res.json()).then(res => {
+            var getListByCountryTypeService1 = res.getListByCountryTypeService1;
+            var filterDate = [];
+            getListByCountryTypeService1.forEach(item => {
+                filterDate.push({
+                    name: item.provinceShortName,
+                    value: item.confirmedCount,
+                    deadCount: item.deadCount,
+                    curedCount: item.curedCount
+                })
+            });
+            myCharts.setOption({
+                title: {
+                    // 标题
+                    text: 'nCov-全国实例疫情数据分布图',
+                    subtext: '2019-nCov',
+                    left: 'center'
+                },
+                // 图标背景色
+                backgroundColor: '#f7f7f7',
+                // 提示框
+                tooltip: {
+                    // triggerOn: 'click', 触发方式 默认是mousemove
+                    formatter: function(params) {
+                        return `地区:${params.name}<br/>确诊${params.value|| 0}<br/>治愈:${params.data?params.data.curedCount:0}<br/>死亡:${params.data?params.data.deadCount:0}`
+                    }
+                },
+                visualMap: {
+                    type: 'piecewise',
+                    pieces: [{
+                            gt: 10000
+                        }, // (1500, Infinity]
+                        {
+                            gt: 1000,
+                            lte: 9999
+                        }, // (900, 1500]
+                        {
+                            gt: 100,
+                            lte: 999
+                        }, // (310, 1000]
+                        {
+                            gt: 10,
+                            lte: 99
+                        }, // (200, 300]
+                        {
+                            lt: 0,
+                            lte: 9,
+                        } // (-Infinity, 5)
+                    ]
+                },
+                series: [{
+                    type: 'map', // 图表类型
+                    map: 'china', //中国地图
+                    // 覆盖物设置
+                    label: {
+                        show: true,
+                        fontSize: 9
+
+                    },
+                    data: filterDate,
+                }]
+            })
+
+        })
+    </script>
+</body>
+
+</html>
