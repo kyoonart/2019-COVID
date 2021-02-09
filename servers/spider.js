@@ -1,4 +1,3 @@
-// 目标是？
 // 爬取丁香园网站的疫情数据
 // 在node端要有一个帮助我请求丁香园网站
 const superagent = require('superagent')
@@ -11,10 +10,9 @@ const url = `https://ncov.dxy.cn/ncovh5/view/pneumonia`
 superagent
     .get(url)
     .then(res => {
-        // console.log(res.text) // 相应的内容
         // 浏览器可以解析html 但是node端不行
         // 2. 去解析html字符串从里面提取对应疫情数据
-        const $ = cheerio.load(res.text) // 然后后我们就可以通过jQuery的方法操作dom
+        const $ = cheerio.load(res.text) // 然后就可以通过jQuery的方法操作dom
             // 获取全国疫情信息数据
         var $getListByCountryTypeService1 = $('#getListByCountryTypeService1').html()
         var $getAreaStat = $('#getAreaStat').html()
